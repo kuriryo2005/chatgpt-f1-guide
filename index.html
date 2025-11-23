@@ -6,7 +6,7 @@
     <title>ChatGPT Pro for Engineers</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Apple Style + F1 Tech + Robust Video Loader -->
+    <!-- Chosen Palette: Apple Style + Rich Text Content + Simple Video -->
     <style>
         body {
             font-family: 'Inter', 'Noto Sans JP', sans-serif;
@@ -103,123 +103,6 @@
         
         /* Text enhancements */
         .text-body { color: #424245; font-size: 1.05rem; }
-        .text-caption { color: #86868b; font-size: 0.9rem; }
-
-        /* --- Cinematic F1 Video Styles --- */
-        #speed-zone {
-            position: relative;
-            background: #000;
-            overflow: hidden;
-            min-height: 700px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Video Container - The "Car" */
-        .video-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 1100px;
-            aspect-ratio: 16/9;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            
-            /* Initial State: Off-screen to the LEFT */
-            transform: translateX(-150%) skewX(-20deg);
-            opacity: 0.5;
-            transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease;
-            z-index: 20;
-        }
-
-        /* Drive In Animation State */
-        .video-wrapper.drive-in {
-            transform: translateX(0) skewX(0deg);
-            opacity: 1;
-        }
-
-        #f1-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: scale(1.01); /* Prevent edge bleeding */
-            transition: filter 1s ease;
-        }
-
-        /* Dark Overlay for Ending */
-        .video-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            opacity: 0;
-            transition: opacity 1.5s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-        }
-
-        .video-wrapper.finished .video-overlay {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        /* Button Animation */
-        .start-btn {
-            opacity: 0;
-            transform: translateY(30px) scale(0.9);
-            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
-            transition-delay: 0.2s;
-        }
-
-        .video-wrapper.finished .start-btn {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-        
-        /* Rescue Play Button (Shows if autoplay blocked) */
-        .rescue-play-btn {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.6);
-            border: 2px solid white;
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            cursor: pointer;
-            z-index: 50;
-            display: none; /* Hidden by default */
-            font-weight: bold;
-            backdrop-filter: blur(4px);
-        }
-        .rescue-play-btn:hover { background: rgba(0,0,0,0.8); }
-
-        /* Speed Streaks */
-        .speed-streaks {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
-            transform: scaleX(0);
-            transform-origin: left;
-            opacity: 0;
-            z-index: 10;
-        }
-        
-        .video-wrapper.drive-in + .speed-streaks {
-            animation: streak 0.8s ease-out forwards;
-        }
-
-        @keyframes streak {
-            0% { transform: scaleX(0); opacity: 1; }
-            50% { transform: scaleX(1); opacity: 0.5; }
-            100% { transform: scaleX(0) translateX(100%); opacity: 0; }
-        }
-
     </style>
 </head>
 <body>
@@ -478,38 +361,25 @@
         </div>
     </section>
 
-    <!-- Section 5: F1 Cinematic Video Zone -->
-    <section id="speed-zone">
-        <div class="container mx-auto px-6 relative z-30 flex flex-col items-center">
-            
-            <h2 class="text-5xl md:text-7xl font-bold text-white mb-12 tracking-tighter text-center" style="text-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+    <!-- Section 5: F1 Video (Simple & Robust) -->
+    <section id="speed-zone" class="py-32 bg-black">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl md:text-6xl font-bold text-white mb-12 tracking-tighter">
                 Engineered for Speed.
             </h2>
-
-            <!-- Video Wrapper with Drive-In Animation -->
-            <!-- "rescue-play-btn" will appear if autoplay is blocked -->
-            <button class="rescue-play-btn" id="rescue-btn" onclick="document.getElementById('f1-video').play(); this.style.display='none'">
-                ▶ Play Video
-            </button>
-
-            <div class="video-wrapper" id="video-container">
-                <!-- IMPORTANT: Requires 'f1.mp4' in same folder. Lowercase filename. -->
-                <video id="f1-video" src="f1.mp4" playsinline muted preload="auto" class="w-full h-full object-cover"></video>
-                
-                <!-- Dark Overlay & Button (Hidden initially) -->
-                <div class="video-overlay">
-                    <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="start-btn btn-apple px-10 py-5 text-xl font-bold shadow-2xl bg-white text-black hover:scale-105 border border-white flex items-center gap-3">
-                        <span>Start Your Engine</span>
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    </a>
-                </div>
-            </div>
             
-            <div class="speed-streaks"></div>
+            <!-- Simple Video Container -->
+            <div class="max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-neutral-800">
+                <video src="f1.mp4" controls class="w-full h-auto" preload="metadata">
+                    お使いのブラウザは動画タグをサポートしていません。
+                </video>
+            </div>
 
-            <p class="text-neutral-500 text-sm mt-8">
-                * Video: Red Bull Racing (Sample)
-            </p>
+            <div class="mt-12">
+                 <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="btn-apple px-8 py-4 text-lg font-bold bg-white text-black hover:bg-neutral-200 shadow-xl transition-all">
+                    Start Your Engine
+                </a>
+            </div>
         </div>
     </section>
 
@@ -518,7 +388,7 @@
         <p class="text-xs text-neutral-600">© 2025 Mechanical Engineering Prompts Guide. Designed with Speed.</p>
     </section>
 
-    <!-- Modals (Expanded Content) -->
+    <!-- Modals (Full Content from Previous Version) -->
     
     <!-- Persona Modal -->
     <div id="modal-persona" class="modal-overlay" onclick="closeModal(this)">
@@ -540,15 +410,35 @@
             </div>
         </div>
     </div>
-    <!-- (Other modals kept short for brevity in this robust version, but functionality is preserved) -->
-    <div id="modal-context" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">Context</h3><div class="code-block bg-white text-sm"># 前提条件<br>- 私は機械工学科の学部2年生です。</div></div></div>
-    <div id="modal-mech" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">機械工学プロンプト</h3><p>材料力学・流体力学・熱力学・機械力学の各分野で使えるプロンプト。</p></div></div>
-    <div id="modal-structure" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">レポート構成案</h3><p>実験データを渡して章立てを作成。</p></div></div>
-    <div id="modal-english" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">英語論文読解</h3><p>要約と新規性の抽出。</p></div></div>
-    <div id="modal-python" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">Pythonデータ解析</h3><p>CSV読み込みからグラフ作成まで。</p></div></div>
-    <div id="modal-debug" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-2xl font-bold mb-4">デバッグ</h3><p class="text-body">エラーログとコードをセットで貼り付け。</p></div></div>
-    <div id="modal-explain" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-2xl font-bold mb-4">コード解説</h3><p class="text-body">1行ずつコメント解説を要求。</p></div></div>
-    <div id="modal-control" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-2xl font-bold mb-4">制御工学</h3><p class="text-body">ボード線図やPID制御のパラメータ調整。</p></div></div>
+    
+    <!-- Context Modal -->
+    <div id="modal-context" class="modal-overlay" onclick="closeModal(this)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close" onclick="closeModal(this)">✕</div>
+            <h3 class="text-3xl font-bold mb-6">Context (文脈) の黄金律</h3>
+            <p class="text-body mb-6">あなたの状況（学年、知識レベル、目的）を伝える「前提情報のセット」を用意しましょう。</p>
+            <div class="bg-neutral-50 p-6 rounded-2xl border border-neutral-200">
+                <div class="code-block bg-white text-sm"># 前提条件<br>- 私は機械工学科の学部2年生です。<br>- 「材料力学」の授業の課題です。<br><br># 困っている点<br>- I型断面の断面二次モーメントの求め方がわかりません。</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mech Modal -->
+    <div id="modal-mech" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">機械工学特化プロンプト</h3><div class="border border-neutral-200 p-6 rounded-2xl mb-4"><h4 class="font-bold text-lg mb-2">材料力学: 破壊モード</h4><div class="code-block bg-neutral-50 text-sm">「延性破壊」と「脆性破壊」について、破断面の特徴（ディンプル、へき開）を含めて比較してください。</div></div><div class="border border-neutral-200 p-6 rounded-2xl"><h4 class="font-bold text-lg mb-2">加工学: 工法選定</h4><div class="code-block bg-neutral-50 text-sm">A5052の複雑形状部品を1個試作。「マシニングセンタ」と「3Dプリンタ」のどちらが適しているか比較検討してください。</div></div></div></div>
+    
+    <!-- Structure Modal -->
+    <div id="modal-structure" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">レポート構成案</h3><div class="bg-neutral-50 p-6 rounded-2xl"><div class="code-block bg-white text-sm">テーマ：「金属材料の引張試験」<br>結果：降伏点、引張強さ、破断伸び<br>上記に基づき、考察に含めるべきポイントとレポートの章立て案を作成してください。</div></div></div></div>
+    
+    <!-- English Modal -->
+    <div id="modal-english" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">英語論文読解</h3><div class="bg-green-50 p-6 rounded-2xl"><h4 class="font-bold text-green-900 mb-2">論文の「つまみ食い」要約</h4><div class="code-block bg-white text-sm">以下のAbstractを読み込み、3点を日本語でまとめてください。<br>1. 解決する課題 (Gap)<br>2. コアとなるアイデア<br>3. 最終的な成果（数値）</div></div></div></div>
+    
+    <!-- Python Modal -->
+    <div id="modal-python" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">Pythonデータ解析</h3><div class="bg-neutral-100 p-6 rounded-2xl"><div class="code-block bg-white text-sm">以下の要件でコードを書いてください。<br>1. フォルダ内の全CSVを読み込む<br>2. 'Voltage'列に移動平均フィルタをかける<br>3. 全データを重ねてプロットし保存する</div></div></div></div>
+    
+    <!-- Placeholder Modals -->
+    <div id="modal-debug" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-2xl font-bold mb-4">デバッグの鉄則</h3><p class="text-body">エラーログは全てコピペし、「何をしようとしていたか」を添えましょう。</p></div></div>
+    <div id="modal-explain" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-2xl font-bold mb-4">コード解説</h3><p class="text-body">「1行ずつコメントをつけて」と頼むのがコツです。</p></div></div>
+    <div id="modal-control" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-2xl font-bold mb-4">制御工学</h3><p class="text-body">ボード線図やナイキスト線図の読み方を言葉で説明してもらいましょう。</p></div></div>
 
     <!-- Scripts -->
     <script>
@@ -584,62 +474,6 @@
             window.addEventListener('scroll', () => {
                 navbar.classList.toggle('shadow-sm', window.scrollY > 50);
             });
-
-            // Cinematic Video Logic (ROBUST VERSION)
-            const videoContainer = document.getElementById('video-container');
-            const video = document.getElementById('f1-video');
-            const rescueBtn = document.getElementById('rescue-btn');
-            
-            const startTime = 0; 
-            const duration = 15; 
-            let hasPlayed = false;
-
-            // Force finish if video fails/ends
-            const finishSequence = () => {
-                 videoContainer.classList.add('finished');
-            };
-
-            const videoObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && !hasPlayed) {
-                        // 1. Drive In
-                        videoContainer.classList.add('drive-in');
-                        hasPlayed = true;
-
-                        // 2. Try Play
-                        setTimeout(() => {
-                            video.currentTime = startTime;
-                            const playPromise = video.play();
-                            
-                            if (playPromise !== undefined) {
-                                playPromise.then(_ => {
-                                    // Autoplay started!
-                                })
-                                .catch(error => {
-                                    console.log("Autoplay blocked, showing rescue button");
-                                    // Show manual play button if blocked
-                                    rescueBtn.style.display = 'block';
-                                });
-                            }
-                        }, 800);
-                        
-                        // 3. Safety Timeout: Force finish screen after 20s if video stuck
-                        setTimeout(finishSequence, 20000);
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            videoObserver.observe(videoContainer);
-
-            video.addEventListener('timeupdate', () => {
-                if (!video.paused && video.currentTime >= (startTime + duration)) {
-                    video.pause();
-                    finishSequence();
-                }
-            });
-            
-            // Fallback for "ended" if duration mismatch
-            video.addEventListener('ended', finishSequence);
         });
     </script>
 </body>
