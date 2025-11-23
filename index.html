@@ -6,7 +6,7 @@
     <title>ChatGPT Pro for Engineers</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Apple Style + F1 Tech + Dynamic Video Animation -->
+    <!-- Chosen Palette: Apple Style + Rich Text Content + Simple Video -->
     <style>
         body {
             font-family: 'Inter', 'Noto Sans JP', sans-serif;
@@ -25,7 +25,7 @@
             border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
-        /* Reveal Animation (Text content) */
+        /* Reveal Animation */
         .reveal {
             opacity: 0;
             transform: translateY(30px) scale(0.98);
@@ -103,119 +103,6 @@
         
         /* Text enhancements */
         .text-body { color: #424245; font-size: 1.05rem; }
-        
-        /* --- F1 Dynamic Video Animation --- */
-        #speed-zone {
-            position: relative;
-            background: #000;
-            overflow: hidden;
-            min-height: 700px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Video Container - The "Car" */
-        .video-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 1100px;
-            aspect-ratio: 16/9;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            
-            /* Initial State: Far left, Skewed for speed */
-            transform: translateX(-150%) skewX(-20deg);
-            opacity: 0;
-            
-            /* The "Fly-In" Transition */
-            transition: transform 1.0s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease;
-            z-index: 20;
-        }
-
-        /* Trigger class for Fly-In */
-        .video-wrapper.drive-in {
-            transform: translateX(0) skewX(0deg);
-            opacity: 1;
-        }
-
-        /* Video Element */
-        #f1-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: scale(1.02); /* Slight zoom to prevent edge gaps */
-            transition: filter 1s ease;
-        }
-
-        /* Dark Overlay for End Screen */
-        .video-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            opacity: 0;
-            transition: opacity 1.5s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-        }
-
-        .video-wrapper.finished .video-overlay {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        /* Button Appearance */
-        .start-btn {
-            opacity: 0;
-            transform: translateY(30px) scale(0.9);
-            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
-            transition-delay: 0.2s;
-        }
-
-        .video-wrapper.finished .start-btn {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        /* Manual Play Button (Safety Net) */
-        .play-trigger {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px; height: 80px;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            z-index: 30;
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255,255,255,0.5);
-            opacity: 0; /* Hidden initially */
-            pointer-events: none;
-        }
-        .play-trigger:hover { background: rgba(255,255,255,0.4); transform: translate(-50%, -50%) scale(1.1); }
-        .video-wrapper.paused .play-trigger { opacity: 1; pointer-events: auto; }
-
-        /* Speed Streaks (Wind effect) */
-        .speed-streaks {
-            position: absolute;
-            top: 50%; left: 0; width: 100%; height: 4px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
-            transform: scaleX(0); transform-origin: left;
-            opacity: 0; z-index: 10;
-        }
-        .video-wrapper.drive-in + .speed-streaks {
-            animation: streak 0.8s ease-out forwards;
-        }
-        @keyframes streak {
-            0% { transform: scaleX(0); opacity: 1; }
-            50% { transform: scaleX(1); opacity: 0.5; }
-            100% { transform: scaleX(0) translateX(100%); opacity: 0; }
-        }
     </style>
 </head>
 <body>
@@ -474,38 +361,25 @@
         </div>
     </section>
 
-    <!-- Section 5: F1 Cinematic Video Zone -->
-    <section id="speed-zone">
-        <div class="container mx-auto px-6 relative z-30 flex flex-col items-center">
-            
-            <h2 class="text-5xl md:text-7xl font-bold text-white mb-12 tracking-tighter text-center" style="text-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+    <!-- Section 5: F1 Video (Simple & Robust) -->
+    <section id="speed-zone" class="py-32 bg-black">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl md:text-6xl font-bold text-white mb-12 tracking-tighter">
                 Engineered for Speed.
             </h2>
-
-            <!-- Video Wrapper with Drive-In Animation -->
-            <div class="video-wrapper" id="video-container">
-                <!-- IMPORTANT: Requires 'f1.mp4' in same folder -->
-                <video id="f1-video" src="f1.mp4" playsinline muted preload="auto" class="w-full h-full object-cover"></video>
-                
-                <!-- Manual Play Trigger (Appears if not playing) -->
-                <div class="play-trigger" id="play-btn">
-                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>
-                </div>
-
-                <!-- Dark Overlay & Button (Hidden initially) -->
-                <div class="video-overlay">
-                    <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="start-btn btn-apple px-10 py-5 text-xl font-bold shadow-2xl bg-white text-black hover:scale-105 border border-white flex items-center gap-3">
-                        <span>Start Your Engine</span>
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    </a>
-                </div>
-            </div>
             
-            <div class="speed-streaks"></div>
+            <!-- Simple Video Container -->
+            <div class="max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-neutral-800">
+                <video src="f1.mp4" controls class="w-full h-auto" preload="metadata">
+                    お使いのブラウザは動画タグをサポートしていません。
+                </video>
+            </div>
 
-            <p class="text-neutral-500 text-sm mt-8">
-                * Video: Red Bull Racing (Sample)
-            </p>
+            <div class="mt-12">
+                 <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="btn-apple px-8 py-4 text-lg font-bold bg-white text-black hover:bg-neutral-200 shadow-xl transition-all">
+                    Start Your Engine
+                </a>
+            </div>
         </div>
     </section>
 
@@ -514,24 +388,56 @@
         <p class="text-xs text-neutral-600">© 2025 Mechanical Engineering Prompts Guide. Designed with Speed.</p>
     </section>
 
-    <!-- Modals (Full Content) -->
+    <!-- Modals (Full Content from Previous Version) -->
+    
     <!-- Persona Modal -->
-    <div id="modal-persona" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">Persona (役割設定) の深層</h3><p class="text-body mb-6">AIの回答精度は「誰に聞くか」で9割決まります。漠然と質問するのではなく、理想の回答者を召喚しましょう。</p><div class="space-y-6"><div class="bg-blue-50 p-6 rounded-2xl"><h4 class="font-bold text-blue-900 mb-3 text-lg">Case 1: 厳しい査読者</h4><p class="text-sm text-neutral-700 mb-3">自分が書いたレポートの論理的な穴を見つけるのは困難です。</p><div class="code-block bg-white text-sm"><span class="text-blue-600 font-bold">Role:</span> あなたは厳しい論文査読者です。論理の飛躍を厳しく指摘してください。</div></div><div class="bg-amber-50 p-6 rounded-2xl"><h4 class="font-bold text-amber-900 mb-3 text-lg">Case 2: 優しい家庭教師</h4><p class="text-sm text-neutral-700 mb-3">教科書の定義が難しすぎるときに。</p><div class="code-block bg-white text-sm"><span class="text-amber-600 font-bold">Role:</span> あなたは教え上手な先輩です。数式を使わず、直感的な例えで教えてください。</div></div></div></div></div>
+    <div id="modal-persona" class="modal-overlay" onclick="closeModal(this)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close" onclick="closeModal(this)">✕</div>
+            <h3 class="text-3xl font-bold mb-6">Persona (役割設定) の深層</h3>
+            <p class="text-body mb-6">AIの回答精度は「誰に聞くか」で9割決まります。漠然と質問するのではなく、理想の回答者を召喚しましょう。</p>
+            <div class="space-y-6">
+                <div class="bg-blue-50 p-6 rounded-2xl">
+                    <h4 class="font-bold text-blue-900 mb-3 text-lg">Case 1: 厳しい査読者</h4>
+                    <p class="text-sm text-neutral-700 mb-3">自分が書いたレポートの論理的な穴を見つけるのは困難です。</p>
+                    <div class="code-block bg-white text-sm"><span class="text-blue-600 font-bold">Role:</span> あなたは厳しい論文査読者です。論理の飛躍を厳しく指摘してください。</div>
+                </div>
+                <div class="bg-amber-50 p-6 rounded-2xl">
+                    <h4 class="font-bold text-amber-900 mb-3 text-lg">Case 2: 優しい家庭教師</h4>
+                    <p class="text-sm text-neutral-700 mb-3">教科書の定義が難しすぎるときに。</p>
+                    <div class="code-block bg-white text-sm"><span class="text-amber-600 font-bold">Role:</span> あなたは教え上手な先輩です。数式を使わず、直感的な例えで教えてください。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Context Modal -->
-    <div id="modal-context" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">Context (文脈) の黄金律</h3><p class="text-body mb-6">あなたの状況（学年、知識レベル、目的）を伝える「前提情報のセット」を用意しましょう。</p><div class="bg-neutral-50 p-6 rounded-2xl border border-neutral-200"><div class="code-block bg-white text-sm"># 前提条件<br>- 私は機械工学科の学部2年生です。<br>- 「材料力学」の授業の課題です。<br><br># 困っている点<br>- I型断面の断面二次モーメントの求め方がわかりません。</div></div></div></div>
+    <div id="modal-context" class="modal-overlay" onclick="closeModal(this)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close" onclick="closeModal(this)">✕</div>
+            <h3 class="text-3xl font-bold mb-6">Context (文脈) の黄金律</h3>
+            <p class="text-body mb-6">あなたの状況（学年、知識レベル、目的）を伝える「前提情報のセット」を用意しましょう。</p>
+            <div class="bg-neutral-50 p-6 rounded-2xl border border-neutral-200">
+                <div class="code-block bg-white text-sm"># 前提条件<br>- 私は機械工学科の学部2年生です。<br>- 「材料力学」の授業の課題です。<br><br># 困っている点<br>- I型断面の断面二次モーメントの求め方がわかりません。</div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Mech Modal -->
     <div id="modal-mech" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">機械工学特化プロンプト</h3><div class="border border-neutral-200 p-6 rounded-2xl mb-4"><h4 class="font-bold text-lg mb-2">材料力学: 破壊モード</h4><div class="code-block bg-neutral-50 text-sm">「延性破壊」と「脆性破壊」について、破断面の特徴（ディンプル、へき開）を含めて比較してください。</div></div><div class="border border-neutral-200 p-6 rounded-2xl"><h4 class="font-bold text-lg mb-2">加工学: 工法選定</h4><div class="code-block bg-neutral-50 text-sm">A5052の複雑形状部品を1個試作。「マシニングセンタ」と「3Dプリンタ」のどちらが適しているか比較検討してください。</div></div></div></div>
+    
     <!-- Structure Modal -->
     <div id="modal-structure" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">レポート構成案</h3><div class="bg-neutral-50 p-6 rounded-2xl"><div class="code-block bg-white text-sm">テーマ：「金属材料の引張試験」<br>結果：降伏点、引張強さ、破断伸び<br>上記に基づき、考察に含めるべきポイントとレポートの章立て案を作成してください。</div></div></div></div>
+    
     <!-- English Modal -->
     <div id="modal-english" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">英語論文読解</h3><div class="bg-green-50 p-6 rounded-2xl"><h4 class="font-bold text-green-900 mb-2">論文の「つまみ食い」要約</h4><div class="code-block bg-white text-sm">以下のAbstractを読み込み、3点を日本語でまとめてください。<br>1. 解決する課題 (Gap)<br>2. コアとなるアイデア<br>3. 最終的な成果（数値）</div></div></div></div>
+    
     <!-- Python Modal -->
     <div id="modal-python" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">Pythonデータ解析</h3><div class="bg-neutral-100 p-6 rounded-2xl"><div class="code-block bg-white text-sm">以下の要件でコードを書いてください。<br>1. フォルダ内の全CSVを読み込む<br>2. 'Voltage'列に移動平均フィルタをかける<br>3. 全データを重ねてプロットし保存する</div></div></div></div>
-    <!-- Debug Modal -->
+    
+    <!-- Placeholder Modals -->
     <div id="modal-debug" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-2xl font-bold mb-4">デバッグの鉄則</h3><p class="text-body">エラーログは全てコピペし、「何をしようとしていたか」を添えましょう。</p></div></div>
-    <!-- Explain Modal -->
     <div id="modal-explain" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-2xl font-bold mb-4">コード解説</h3><p class="text-body">「1行ずつコメントをつけて」と頼むのがコツです。</p></div></div>
-    <!-- Control Modal -->
     <div id="modal-control" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-2xl font-bold mb-4">制御工学</h3><p class="text-body">ボード線図やナイキスト線図の読み方を言葉で説明してもらいましょう。</p></div></div>
 
     <!-- Scripts -->
@@ -568,67 +474,6 @@
             window.addEventListener('scroll', () => {
                 navbar.classList.toggle('shadow-sm', window.scrollY > 50);
             });
-
-            // Cinematic Video Logic (Dynamic Fly-In + Robust Playback)
-            const videoContainer = document.getElementById('video-container');
-            const video = document.getElementById('f1-video');
-            const playBtn = document.getElementById('play-btn');
-            
-            const startTime = 0; 
-            const duration = 15; // Play for 15 seconds
-            let hasPlayed = false;
-
-            // End sequence: Fade to black, show main button
-            const finishSequence = () => {
-                 videoContainer.classList.add('finished');
-            };
-
-            // Intersection Observer for Fly-In
-            const videoObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && !hasPlayed) {
-                        // 1. Trigger "Fly-In" Animation
-                        videoContainer.classList.add('drive-in');
-                        hasPlayed = true;
-
-                        // 2. Attempt Autoplay (Muted)
-                        setTimeout(() => {
-                            video.currentTime = startTime;
-                            const playPromise = video.play();
-                            
-                            if (playPromise !== undefined) {
-                                playPromise.then(_ => {
-                                    // Autoplay started! Hide Play button
-                                    videoContainer.classList.remove('paused');
-                                })
-                                .catch(error => {
-                                    console.log("Autoplay blocked. Showing manual play button.");
-                                    // Show manual play button if blocked
-                                    videoContainer.classList.add('paused');
-                                });
-                            }
-                        }, 800); // Wait for slide animation
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            videoObserver.observe(videoContainer);
-
-            // Manual Play Trigger
-            playBtn.addEventListener('click', () => {
-                video.play();
-                videoContainer.classList.remove('paused');
-            });
-
-            // Monitor Playback
-            video.addEventListener('timeupdate', () => {
-                if (!video.paused && video.currentTime >= (startTime + duration)) {
-                    video.pause();
-                    finishSequence();
-                }
-            });
-            
-            video.addEventListener('ended', finishSequence);
         });
     </script>
 </body>
