@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Pro for Engineers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Apple Style + F1 Tech + Rich Text Content -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* Typography & Base */
+        .hero-text { letter-spacing: -0.02em; line-height: 1.05; }
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0) scale(1); }
+
+        /* Bento Card */
+        .bento-card {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .bento-card:hover { transform: scale(1.015); box-shadow: 0 16px 40px rgba(0,0,0,0.08); z-index: 10; }
+
+        /* Plus Button */
+        .plus-btn {
+            position: absolute; bottom: 24px; right: 24px;
+            width: 36px; height: 36px;
+            background-color: #1d1d1f; color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 22px; cursor: pointer; transition: all 0.3s ease;
+            opacity: 0; transform: scale(0.8);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .bento-card:hover .plus-btn { opacity: 1; transform: scale(1); }
+        .plus-btn:hover { background-color: #0071e3; transform: scale(1.1) rotate(90deg); }
+        .bg-neutral-900 .plus-btn { background-color: #444; }
+        .bg-neutral-900 .plus-btn:hover { background-color: #0071e3; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background: #fff; width: 90%; max-width: 800px;
+            border-radius: 32px; padding: 48px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.15);
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; max-height: 85vh; overflow-y: auto;
+        }
+        .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
+        .modal-close {
+            position: absolute; top: 24px; right: 24px; width: 36px; height: 36px;
+            background: #f5f5f7; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: background 0.2s; font-size: 14px; color: #666;
+        }
+        .modal-close:hover { background: #e5e5e7; color: #000; }
+
+        /* Code Block & Button */
+        .code-block {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            background-color: #f5f5f7; border-radius: 12px; font-size: 0.85rem; line-height: 1.7; color: #333;
+            padding: 1rem; border: 1px solid rgba(0,0,0,0.05);
+        }
+        .btn-apple {
+            background-color: #0071e3; color: white; border-radius: 980px; transition: all 0.3s ease;
+        }
+        .btn-apple:hover { background-color: #0077ed; transform: scale(1.02); }
+        
+        .section-heading {
+            background: linear-gradient(135deg, #1d1d1f 0%, #424245 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        
+        /* Text enhancements */
+        .text-body { color: #424245; font-size: 1.05rem; }
+        .text-caption { color: #86868b; font-size: 0.9rem; }
+
+        /* --- Cinematic F1 Video Styles --- */
+        #speed-zone {
+            position: relative;
+            background: #000;
+            overflow: hidden;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Video Container - The "Car" */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1100px;
+            aspect-ratio: 16/9;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            
+            /* Initial State: Off-screen to the LEFT */
+            transform: translateX(-150%) skewX(-20deg);
+            opacity: 0.5;
+            transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease;
+            z-index: 20;
+        }
+
+        /* Drive In Animation State */
+        .video-wrapper.drive-in {
+            transform: translateX(0) skewX(0deg);
+            opacity: 1;
+        }
+
+        #f1-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.01); /* Prevent edge bleeding */
+            transition: filter 1s ease;
+        }
+
+        /* Dark Overlay for Ending */
+        .video-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .video-wrapper.finished .video-overlay {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* Button Animation */
+        .start-btn {
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            transition-delay: 0.2s;
+        }
+
+        .video-wrapper.finished .start-btn {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Speed Streaks */
+        .speed-streaks {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+            transform: scaleX(0);
+            transform-origin: left;
+            opacity: 0;
+            z-index: 10;
+        }
+        
+        .video-wrapper.drive-in + .speed-streaks {
+            animation: streak 0.8s ease-out forwards;
+        }
+
+        @keyframes streak {
+            0% { transform: scaleX(0); opacity: 1; }
+            50% { transform: scaleX(1); opacity: 0.5; }
+            100% { transform: scaleX(0) translateX(100%); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+            <div class="font-semibold text-lg tracking-tight">ChatGPT <span class="text-neutral-500">for Engineers</span></div>
+            <div class="hidden md:flex space-x-8 text-xs font-medium text-neutral-600">
+                <a href="#basic" class="hover:text-black transition-colors">基礎技術</a>
+                <a href="#mechanical" class="hover:text-black transition-colors">機械工学</a>
+                <a href="#report" class="hover:text-black transition-colors">レポート・論文</a>
+                <a href="#coding" class="hover:text-black transition-colors">解析・コード</a>
+            </div>
+            <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="btn-apple px-4 py-1 text-xs font-medium">Try Now</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex flex-col justify-center items-center text-center px-6 pt-20 relative overflow-hidden bg-white">
+        <div class="reveal active max-w-4xl mx-auto z-10">
+            <p class="text-amber-600 font-semibold mb-6 tracking-wide uppercase text-sm">Mechanical Engineering Students</p>
+            <h1 class="hero-text text-5xl md:text-8xl font-bold mb-8 text-neutral-900">
+                理系の武器。<br>
+                <span class="text-neutral-400">思考の拡張。</span>
+            </h1>
+            <p class="text-lg md:text-2xl text-neutral-500 max-w-3xl mx-auto font-medium leading-relaxed">
+                難解な数式、終わらないレポート、バグだらけのコード。<br>
+                それらに費やす時間を「創造」の時間へ。<br>
+                機械科学生のために最適化された、究極のプロンプト・エンジニアリングガイド。
+            </p>
+            <div class="mt-12 flex gap-4 justify-center">
+                <a href="#basic" class="btn-apple px-8 py-3 text-base font-medium shadow-lg hover:shadow-xl">Explore Guide</a>
+            </div>
+        </div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-blue-50 to-amber-50 rounded-full blur-3xl opacity-60 -z-0 pointer-events-none"></div>
+    </section>
+
+    <!-- Section 0: Philosophy -->
+    <section class="py-24 px-6 bg-white border-b border-neutral-100">
+        <div class="max-w-4xl mx-auto text-center reveal">
+            <h2 class="text-3xl font-bold mb-6">なぜ、AIを使うのか。</h2>
+            <p class="text-body leading-loose text-neutral-600">
+                大学での学びは「答えのある問題を解く」ことから、「答えのない問いに挑む」ことへとシフトしていきます。
+                実験データの解釈、新規性のある研究テーマの立案、複雑な現象のモデル化。<br>
+                これらはAIに丸投げすることはできません。しかし、AIを<span class="font-bold text-black">「壁打ち相手」</span>や<span class="font-bold text-black">「優秀な助手」</span>として扱うことで、あなたの思考プロセスは劇的に加速します。
+                本ガイドは、単なるコピペ用のプロンプト集ではありません。あなたのエンジニアリング能力を拡張するための、対話の設計図です。
+            </p>
+        </div>
+    </section>
+
+    <!-- Section 1: Basic -->
+    <section id="basic" class="py-32 px-6 bg-[#f5f5f7]">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal mb-16 text-center">
+                <span class="text-blue-600 font-bold tracking-wider text-xs uppercase mb-2 block">Fundamentals</span>
+                <h2 class="section-heading text-4xl md:text-5xl font-bold mb-6">基本こそ、最強のスペック。</h2>
+                <p class="text-xl text-neutral-500">精度の高い回答を引き出すための、4つのコア・テクノロジー。<br>クリックして詳細なテクニックを確認してください。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Card 1: Persona -->
+                <div class="bento-card p-8 md:p-12 h-full reveal group cursor-pointer" onclick="openModal('modal-persona')">
+                    <div class="mb-auto">
+                        <div class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center text-xl font-bold mb-6">1</div>
+                        <h3 class="text-3xl font-bold mb-4">Persona Definition</h3>
+                        <p class="text-body mb-6">AIに「誰になりきってもらうか」を定義します。回答の視点、専門性、トーンを制御する最も強力な手法です。</p>
+                        <div class="code-block text-xs border-l-4 border-blue-500">
+                            <span class="text-neutral-400"># Bad:</span><br>
+                            流体力学について教えて。<br><br>
+                            <span class="text-blue-600 font-bold"># Good:</span><br>
+                            あなたは<span class="font-bold">流体力学の専門家であり、大学教授</span>です。学部2年生にも直感的に理解できるように...
+                        </div>
+                    </div>
+                    <div class="plus-btn">+</div>
+                </div>
+
+                <!-- Card 2: Context -->
+                <div class="bento-card p-8 md:p-12 h-full reveal cursor-pointer group" style="transition-delay: 100ms;" onclick="openModal('modal-context')">
+                    <div class="mb-auto">
+                        <div class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center text-xl font-bold mb-6">2</div>
+                        <h3 class="text-3xl font-bold mb-4">Context & Goal</h3>
+                        <p class="text-body mb-6">「背景」と「目的」がなければ、最適な回答は得られません。何のために、誰に向けて、どのような成果物が欲しいのか。</p>
+                        <div class="code-block text-xs border-l-4 border-amber-500">
+                            <span class="text-neutral-400"># Input:</span><br>
+                            現在、<span class="font-bold">「金属材料の疲労破壊」に関する実験レポート</span>を作成しています。<br>
+                            目的は、S-N曲線のグラフから疲労限度を読み取り、その物理的意味を考察することです...
+                        </div>
+                    </div>
+                    <div class="plus-btn">+</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Mechanical Engineering -->
+    <section id="mechanical" class="py-32 px-6 bg-black text-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal mb-24 max-w-3xl">
+                <span class="text-amber-500 font-bold tracking-wider text-sm uppercase mb-2 block">Professional Grade</span>
+                <h2 class="text-5xl md:text-7xl font-bold mb-8 leading-tight">機械工学の<br>深淵へ。</h2>
+                <p class="text-body text-neutral-400">
+                    4大力学、製図、加工法、制御。<br>
+                    専門領域特有の「概念の理解」と「応用のヒント」を得るための専用プロンプト。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Main Feature Card -->
+                <div class="lg:col-span-8 bg-neutral-900 rounded-3xl p-8 md:p-12 border border-neutral-800 reveal group cursor-pointer hover:border-neutral-700 transition-colors" onclick="openModal('modal-mech')">
+                    <h3 class="text-2xl font-bold mb-4">概念比較・深化 (Concept Deep-Dive)</h3>
+                    <p class="text-neutral-400 mb-8 leading-relaxed">
+                        似て非なる概念の違いを明確にし、本質的な理解を促します。<br>
+                        教科書の説明だけでは腹落ちしない数式や現象も、対話形式で解きほぐすことができます。
+                    </p>
+                    <div class="bg-black rounded-xl p-6 font-mono text-sm text-neutral-300 leading-relaxed overflow-x-auto border border-neutral-800">
+                        <span class="text-amber-500">Prompt:</span><br>
+                        「ラグランジュの運動方程式」と「ニュートンの運動方程式」の違いについて、<br>
+                        1. 数学的アプローチの違い（ベクトルかエネルギーか）<br>
+                        2. 拘束条件がある場合の計算の利便性<br>
+                        3. 具体的な使い分けのシチュエーション<br>
+                        の観点から、機械工学専攻の学生向けに比較表を作成して解説してください。
+                    </div>
+                    <div class="plus-btn text-black bg-white hover:bg-amber-500 hover:text-white">+</div>
+                </div>
+
+                <!-- Side Feature Card -->
+                <div class="lg:col-span-4 bg-neutral-800 rounded-3xl p-8 border border-neutral-700 reveal flex flex-col justify-center cursor-pointer group hover:bg-neutral-750" style="transition-delay: 100ms;" onclick="openModal('modal-control')">
+                    <div class="mb-auto">
+                        <h4 class="text-xl font-bold mb-2 text-amber-500">制御・設計工学</h4>
+                        <p class="text-neutral-400 text-sm leading-relaxed">
+                            伝達関数の挙動予測から、機構のアイデア出しまで。<br>
+                            設計の初期段階でのブレインストーミングに最適です。
+                        </p>
+                    </div>
+                    <div class="mt-8 bg-neutral-900/50 p-4 rounded-lg text-xs font-mono text-neutral-500 border border-neutral-800">
+                        Prompt:<br>
+                        回転運動を往復直線運動に変換する機構を5つ挙げ、それぞれのメリット・デメリット（摩擦、コスト、精度）を...
+                    </div>
+                    <div class="plus-btn text-black bg-white hover:bg-amber-500 hover:text-white">+</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Report & Academic -->
+    <section id="report" class="py-32 px-6 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+                <div class="reveal sticky top-32">
+                    <span class="text-green-600 font-bold tracking-wider text-xs uppercase mb-2 block">Academic Writing</span>
+                    <h2 class="section-heading text-4xl md:text-5xl font-bold mb-6">学習も、執筆も。<br>すべてを加速する。</h2>
+                    <p class="text-body text-neutral-600 mb-8 leading-loose">
+                        実験レポートの考察に行き詰まったとき、英語論文の山に絶望したとき。<br>
+                        AIはあなたの「思考の整理」を手伝い、学術的な表現へと昇華させます。
+                        単なる翻訳や要約を超えた、能動的な学習パートナーとしての活用法です。
+                    </p>
+                    
+                    <ul class="space-y-6 mb-8">
+                        <li class="flex items-start gap-4 text-neutral-700">
+                            <span class="mt-1 w-6 h-6 rounded-full bg-green-100 text-green-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">✓</span>
+                            <div>
+                                <strong class="block text-black">レポート構成の最適化</strong>
+                                <span class="text-sm text-neutral-500">緒言から結論まで、論理的な流れ（ストーリー）を構築。</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4 text-neutral-700">
+                            <span class="mt-1 w-6 h-6 rounded-full bg-green-100 text-green-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">✓</span>
+                            <div>
+                                <strong class="block text-black">アカデミック・ライティング</strong>
+                                <span class="text-sm text-neutral-500">口語的な表現を、客観的で明瞭な学術的文章へリライト。</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4 text-neutral-700">
+                            <span class="mt-1 w-6 h-6 rounded-full bg-green-100 text-green-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">✓</span>
+                            <div>
+                                <strong class="block text-black">英語論文の高速読解</strong>
+                                <span class="text-sm text-neutral-500">難解な専門用語を含む論文も、文脈を踏まえて解説。</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="space-y-8 reveal" style="transition-delay: 200ms;">
+                    <!-- Card: Structure -->
+                    <div class="bento-card p-8 shadow-lg border border-neutral-100 cursor-pointer group" onclick="openModal('modal-structure')">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Structure Building</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3">レポート構成案の作成</h4>
+                        <p class="text-sm text-neutral-500 mb-4">実験の目的と得られたデータを伝えるだけで、標準的な章立てを提案させます。</p>
+                        <div class="font-mono text-xs text-neutral-800 bg-neutral-50 p-4 rounded-lg">
+                            テーマ：「金属材料の引張試験」<br>
+                            得られた結果：降伏点、引張強さ、破断伸び<br>
+                            上記に基づき、考察に含めるべきポイントとレポートの章立て案を作成してください。
+                        </div>
+                        <div class="plus-btn text-xs">+</div>
+                    </div>
+
+                    <!-- Card: English -->
+                    <div class="bento-card p-8 shadow-lg border border-neutral-100 cursor-pointer group" onclick="openModal('modal-english')">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs font-bold text-neutral-400 uppercase tracking-wider">English & Papers</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3">英語論文 × 概念理解</h4>
+                        <p class="text-sm text-neutral-500 mb-4">翻訳するだけでなく、「なぜその手法を使ったのか？」という背景を質問します。</p>
+                        <div class="font-mono text-xs text-neutral-800 bg-neutral-50 p-4 rounded-lg">
+                            以下のAbstractを日本語に翻訳し、さらに<br>
+                            1. この研究の新規性は何か<br>
+                            2. 従来手法との違いは何か<br>
+                            を箇条書きで要約してください。
+                        </div>
+                        <div class="plus-btn text-xs">+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Coding & Analysis -->
+    <section id="coding" class="py-32 px-6 bg-[#f5f5f7]">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-neutral-900">Code & Analysis</h2>
+                <p class="text-body text-neutral-500 max-w-2xl mx-auto">
+                    Python, MATLAB, Arduino, G-Code.<br>
+                    コーディングは手段であり、目的ではありません。AIに「実装」を任せ、あなたは「アルゴリズムの設計」に集中しましょう。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Python Card -->
+                <div class="bento-card p-8 reveal cursor-pointer group" onclick="openModal('modal-python')">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mb-6 text-3xl">🐍</div>
+                    <h3 class="text-xl font-bold mb-3">Python Data Analysis</h3>
+                    <p class="text-neutral-500 text-sm mb-6">実験データのCSV読み込み、ノイズ処理、Matplotlibによるグラフ化まで、一瞬でコードを生成。</p>
+                    <div class="plus-btn">+</div>
+                </div>
+
+                 <!-- Debug Card -->
+                <div class="bento-card p-8 reveal cursor-pointer group" style="transition-delay: 100ms;" onclick="openModal('modal-debug')">
+                    <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-6 text-3xl">🐛</div>
+                    <h3 class="text-xl font-bold mb-3">Instant Debugging</h3>
+                    <p class="text-neutral-500 text-sm mb-6">エラーログを貼り付けるだけで、原因特定と修正案を提示。「なぜ動かない？」の時間をゼロへ。</p>
+                    <div class="plus-btn">+</div>
+                </div>
+
+                <!-- Explanation Card -->
+                <div class="bento-card p-8 reveal cursor-pointer group" style="transition-delay: 200ms;" onclick="openModal('modal-explain')">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6 text-3xl">📖</div>
+                    <h3 class="text-xl font-bold mb-3">Code Explanation</h3>
+                    <p class="text-neutral-500 text-sm mb-6">先輩の書いた複雑なMATLABコードや、ネットで見つけたアルゴリズムを1行ずつ平易に解説。</p>
+                    <div class="plus-btn">+</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: F1 Cinematic Video Zone -->
+    <section id="speed-zone">
+        <div class="container mx-auto px-6 relative z-30 flex flex-col items-center">
+            
+            <h2 class="text-5xl md:text-7xl font-bold text-white mb-12 tracking-tighter text-center" style="text-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                Engineered for Speed.
+            </h2>
+
+            <!-- Video Wrapper with Drive-In Animation -->
+            <div class="video-wrapper" id="video-container">
+                <!-- IMPORTANT: Requires 'f1.mp4' in same folder -->
+                <video id="f1-video" src="f1.mp4" playsinline muted class="w-full h-full object-cover"></video>
+                
+                <!-- Dark Overlay & Button (Hidden initially) -->
+                <div class="video-overlay">
+                    <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="start-btn btn-apple px-10 py-5 text-xl font-bold shadow-2xl bg-white text-black hover:scale-105 border border-white flex items-center gap-3">
+                        <span>Start Your Engine</span>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="speed-streaks"></div>
+
+            <p class="text-neutral-500 text-sm mt-8">
+                * Video: Red Bull Racing (Sample)
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <section class="py-12 px-6 bg-black border-t border-neutral-900 text-center">
+        <p class="text-xs text-neutral-600">© 2025 Mechanical Engineering Prompts Guide. Designed with Speed.</p>
+    </section>
+
+    <!-- Modals (Expanded Content) -->
+    
+    <!-- Persona Modal -->
+    <div id="modal-persona" class="modal-overlay" onclick="closeModal(this)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close" onclick="closeModal(this)">✕</div>
+            <h3 class="text-3xl font-bold mb-6">Persona (役割設定) の深層</h3>
+            <p class="text-body mb-6">AIの回答精度は「誰に聞くか」で9割決まります。漠然と質問するのではなく、理想の回答者を召喚しましょう。</p>
+            <div class="space-y-6">
+                <div class="bg-blue-50 p-6 rounded-2xl">
+                    <h4 class="font-bold text-blue-900 mb-3 text-lg">Case 1: 厳しい査読者</h4>
+                    <p class="text-sm text-neutral-700 mb-3">自分が書いたレポートの論理的な穴を見つけるのは困難です。</p>
+                    <div class="code-block bg-white text-sm"><span class="text-blue-600 font-bold">Role:</span> あなたは厳しい論文査読者です。論理の飛躍を厳しく指摘してください。</div>
+                </div>
+                <div class="bg-amber-50 p-6 rounded-2xl">
+                    <h4 class="font-bold text-amber-900 mb-3 text-lg">Case 2: 優しい家庭教師</h4>
+                    <p class="text-sm text-neutral-700 mb-3">教科書の定義が難しすぎるときに。</p>
+                    <div class="code-block bg-white text-sm"><span class="text-amber-600 font-bold">Role:</span> あなたは教え上手な先輩です。数式を使わず、直感的な例えで教えてください。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Context Modal -->
+    <div id="modal-context" class="modal-overlay" onclick="closeModal(this)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close" onclick="closeModal(this)">✕</div>
+            <h3 class="text-3xl font-bold mb-6">Context (文脈) の黄金律</h3>
+            <p class="text-body mb-6">あなたの状況（学年、知識レベル、目的）を伝える「前提情報のセット」を用意しましょう。</p>
+            <div class="bg-neutral-50 p-6 rounded-2xl border border-neutral-200">
+                <div class="code-block bg-white text-sm"># 前提条件<br>- 私は機械工学科の学部2年生です。<br>- 「材料力学」の授業の課題です。<br><br># 困っている点<br>- I型断面の断面二次モーメントの求め方がわかりません。</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mech Modal -->
+    <div id="modal-mech" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">機械工学特化プロンプト</h3><div class="border border-neutral-200 p-6 rounded-2xl mb-4"><h4 class="font-bold text-lg mb-2">材料力学: 破壊モード</h4><div class="code-block bg-neutral-50 text-sm">「延性破壊」と「脆性破壊」について、破断面の特徴（ディンプル、へき開）を含めて比較してください。</div></div><div class="border border-neutral-200 p-6 rounded-2xl"><h4 class="font-bold text-lg mb-2">加工学: 工法選定</h4><div class="code-block bg-neutral-50 text-sm">A5052の複雑形状部品を1個試作。「マシニングセンタ」と「3Dプリンタ」のどちらが適しているか比較検討してください。</div></div></div></div>
+    
+    <!-- Structure Modal -->
+    <div id="modal-structure" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">レポート構成案</h3><div class="bg-neutral-50 p-6 rounded-2xl"><div class="code-block bg-white text-sm">テーマ：「金属材料の引張試験」<br>結果：降伏点、引張強さ、破断伸び<br>上記に基づき、考察に含めるべきポイントとレポートの章立て案を作成してください。</div></div></div></div>
+    
+    <!-- English Modal -->
+    <div id="modal-english" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">英語論文読解</h3><div class="bg-green-50 p-6 rounded-2xl"><h4 class="font-bold text-green-900 mb-2">論文の「つまみ食い」要約</h4><div class="code-block bg-white text-sm">以下のAbstractを読み込み、3点を日本語でまとめてください。<br>1. 解決する課題 (Gap)<br>2. コアとなるアイデア<br>3. 最終的な成果（数値）</div></div></div></div>
+    
+    <!-- Python Modal -->
+    <div id="modal-python" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-3xl font-bold mb-6">Pythonデータ解析</h3><div class="bg-neutral-100 p-6 rounded-2xl"><div class="code-block bg-white text-sm">以下の要件でコードを書いてください。<br>1. フォルダ内の全CSVを読み込む<br>2. 'Voltage'列に移動平均フィルタをかける<br>3. 全データを重ねてプロットし保存する</div></div></div></div>
+    
+    <!-- Placeholder Modals -->
+    <div id="modal-debug" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-2xl font-bold mb-4">デバッグの鉄則</h3><p class="text-body">エラーログは全てコピペし、「何をしようとしていたか」を添えましょう。</p></div></div>
+    <div id="modal-explain" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-2xl font-bold mb-4">コード解説</h3><p class="text-body">「1行ずつコメントをつけて」と頼むのがコツです。</p></div></div>
+    <div id="modal-control" class="modal-overlay" onclick="closeModal(this)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-close" onclick="closeModal(this)">✕</div><h3 class="text-2xl font-bold mb-4">制御工学</h3><p class="text-body">ボード線図やナイキスト線図の読み方を言葉で説明してもらいましょう。</p></div></div>
+
+    <!-- Scripts -->
+    <script>
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.add('open');
+                document.body.style.overflow = 'hidden'; 
+            }
+        }
+
+        function closeModal(element) {
+            const overlay = element.classList.contains('modal-overlay') ? element : element.closest('.modal-overlay');
+            if (overlay) {
+                overlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Scroll Reveal
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            
+            // Navbar Glass
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                navbar.classList.toggle('shadow-sm', window.scrollY > 50);
+            });
+
+            // Cinematic Video Logic
+            const videoContainer = document.getElementById('video-container');
+            const video = document.getElementById('f1-video');
+            
+            // Logic: Play from start (0s) for 15 seconds, then fade out
+            const startTime = 0; 
+            const duration = 15; 
+            let hasPlayed = false;
+
+            const videoObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !hasPlayed) {
+                        // 1. Trigger "Drive In" Animation
+                        videoContainer.classList.add('drive-in');
+                        hasPlayed = true;
+
+                        // 2. Start Video after animation completes (approx 0.8s)
+                        setTimeout(() => {
+                            video.currentTime = startTime;
+                            video.play().catch(e => console.log("Autoplay blocked:", e));
+                        }, 800);
+                    }
+                });
+            }, { threshold: 0.5 }); // Trigger when 50% visible
+
+            videoObserver.observe(videoContainer);
+
+            // 3. Monitor Playback time
+            video.addEventListener('timeupdate', () => {
+                if (!video.paused && video.currentTime >= (startTime + duration)) {
+                    // Trigger Ending Animation (Fade to black + Button)
+                    video.pause();
+                    videoContainer.classList.add('finished');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
